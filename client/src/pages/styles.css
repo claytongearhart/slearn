@@ -1,0 +1,21 @@
+.index
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-areas: 'header'
+                        'selector'
+                        'question';
+    grid-template-rows: 2rem fit-content auto;
+    grid-template-columns: 1fr;
+    @media (max-width: 1280px)
+    {
+        grid-template-areas: 'header'
+            'selector' 'question';
+        grid-template-rows: 2rem auto;
+        grid-template-columns: min-content auto;
+    }
+}

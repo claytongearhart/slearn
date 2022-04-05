@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: `.`,
-    siteUrl: `https://www.yourdomain.tld`,
+    title: ``,
+    siteUrl: `https://learn.sabinalobo.me`,
   },
   plugins: [],
 }

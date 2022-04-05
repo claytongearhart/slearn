@@ -4,37 +4,64 @@ import
     CssBaseline,
     GeistProvider,
     Grid,
+    Keyboard,
     Link,
     Loading,
+    Popover,
     Text
   } from "@geist-ui/core";
+import * as Icon from "@geist-ui/icons";
 import * as React from "react";
-import
-  {
-    QueryClient,
-    QueryClientProvider, useQuery
-  } from "react-query";
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+import problems from "./problems";
+import './styles.css';
 
 const queryClient = new QueryClient();
 
 async function fetchMath() {
-  const res = await fetch("http://localhost:3000/data/math.json");
+  const res = await fetch("https://learn.sabinalobo.me/data/math.json");
   return res.json();
 }
 
-async function fetchChem()
-{
-  const res = await fetch("http://localhost:3000/data/chem.json");
+async function fetchChem() {
+  const res = await fetch("https://learn.sabinalobo.me/data/chem.json");
   return res.json();
+}
+
+function Accordion(props) {
+  const [open, setOpen] = React.useState(false);
+  function changeState() {
+    setOpen(!open);
+  }
+  return (
+    <div>
+      <Text h4 onClick={changeState}>
+        {props.title}
+      </Text>
+      {open ? props.children : ""}
+    </div>
+  );
 }
 
 function QuestionScreen(props) {
   return (
-    <div style={{ padding: "1rem", width: "100%" }}>
-      <Card width={"100%"}>
-        <Text h3>Q Screen</Text>
-      </Card>
+    <div style={{ width: "100%", padding: "1rem" }}>
+      <div
+        style={{
+          padding: "0",
+          width: "100%",
+          background: "#fff",
+          transition: "all 0.2s ease",
+          borderRadius: "6px",
+          boxSizing: "border-box",
+          border: "1px solid #eaeaea",
+          display: "grid",
+          gridTemplateColumns: "3fr 1fr",
+        }}
+      >
+        {props.children}
+      </div>
     </div>
     // <p>q</p>
   );
@@ -79,8 +106,25 @@ function MainHeader(props) {
   );
 }
 
+function Subtopic(props) {
+  function clickHand() {
+    console.log(problems[props.object.key]);
+    props.cqt(props.object.key);
+  }
+  return (
+    <Text p onClick={clickHand}>
+      {props.object.topic}
+    </Text>
+  );
+}
 function Topic(props) {
-  return <Text p>{props.data.topic}</Text>;
+  return (
+    <Accordion title={props.data.topic}>
+      {props.data.subtopics.map((object, i) => (
+        <Subtopic object={object} cqt={props.cqt} />
+      ))}
+    </Accordion>
+  );
 }
 
 function SubSelector(props) {
@@ -88,7 +132,7 @@ function SubSelector(props) {
     <div style={{ padding: "1rem", width: "100%" }}>
       <Card>
         {props.data.map((object, i) => (
-          <Topic data={object} />
+          <Topic data={object} cqt={props.cqTopic} />
         ))}
       </Card>
     </div>
@@ -98,19 +142,11 @@ function SubSelector(props) {
 
 function Ok() {
   const [subject, setSubject] = React.useState("None");
-  const math = useQuery(
-    "math",
-    fetchMath,
-    { enabled: subject === "math" }
-  );
-  const chem = useQuery(
-    "chem",
-    fetchChem,
-    {enabled: subject === 'chem'}
-  )
-  
-  let data = subject === "math" ? math.data : chem.data
-  const loading = math.loading && chem.loading
+  const [qTopic, setQTopic] = React.useState("blank");
+  const math = useQuery("math", fetchMath, { enabled: subject === "math" });
+  const chem = useQuery("chem", fetchChem, { enabled: subject === "chem" });
+
+  let data = subject === "math" ? math.data : chem.data;
 
   return (
     <GeistProvider>
@@ -121,10 +157,50 @@ function Ok() {
           <MainHeader setSubject={setSubject} />
         </Grid>
         <Grid xs={24} md={6} height={"calc(15vh - 2cm)"}>
-          {math.status !== 'success' ?  <Loading /> : <SubSelector data={data} />}
+          {math.status !== "success" ? (
+            <Loading />
+          ) : (
+            <SubSelector data={data} cqTopic={setQTopic} />
+          )}
         </Grid>
         <Grid xs={24} md={18} height={"85vh"}>
-          <QuestionScreen />
+          <QuestionScreen>
+            <section style={{ display: "grid", padding: "1rem" }}>
+              {problems[qTopic]()}
+              {(() => {
+                const content = () => (
+                  <div>
+                    Subscript: <Keyboard shift>-</Keyboard>
+                  </div>
+                );
+
+                return (
+                  <Popover
+                    trigger="hover"
+                    content={content}
+                    style={{
+                      justifySelf: "end",
+                      display: "flex",
+                      placeContent: "center",
+                      paddingRight: ".25rem",
+                    }}
+                  >
+                    <Icon.QuestionCircle color="#666" />
+                  </Popover>
+                );
+              })()}
+            </section>
+            <section
+              style={{
+                height: "100%",
+                borderLeft: "1px #E2E8F0 solid",
+                gridColumn: "2/3",
+                padding: "1rem"
+              }}
+            >
+              Men
+            </section>
+          </QuestionScreen>
         </Grid>
       </Grid.Container>
     </GeistProvider>
@@ -132,12 +208,11 @@ function Ok() {
 }
 const IndexPage = () => {
   return (
-        <QueryClientProvider client={queryClient}>
-          <Ok />
-          <ReactQueryDevtools />
-
-        </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <Ok />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
-}
+};
 
 export default IndexPage;
