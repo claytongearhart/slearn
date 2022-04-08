@@ -1,30 +1,36 @@
 [
     {
         "topic": "Quadratics",
-        "subtopics":[]
+        "parent": true,
+        "subtopics": []
     },
     {
         "topic": "Polynomials",
-        "subtopics":[]
+        "parent": true,
+        "subtopics": []
     },
     {
         "topic": "Logarithms",
+        "parent": true,
         "subtopics": [
             {
-                "topic":"Definition of a Logarithm",
+                "topic": "Definition of a Logarithm",
+                "parent": false,
                 "key": "logDef"
             },
             {
                 "topic": "Product / Quotient Property",
+                "parent": false,
                 "key": "logProdQuotProp"
             },
             {
                 "topic": "Power Property",
+                "parent": false,
                 "key": "logPowProp"
             },
-
             {
                 "topic": "Change of Base",
+                "parent": false,
                 "key": "logCOB"
             }
         ]

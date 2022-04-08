@@ -1,6 +1,7 @@
 import { round } from "mathjs";
 import { evaluateTex } from "tex-math-parser"; // ES6 module
 
+
 function getRandomNum(max = 100) {
   return Math.random() * max + 2;
 }
@@ -11,7 +12,7 @@ function normalizeLatex(latex)
     return latex.replace(regPat, "(\\frac{\\log($2)}{\\log($1)})")
 }
 
-function latexEqual(exp1, exp2, vars = []) {
+function latexEqual(exp1, exp2, vars = [], iter) {
   console.log([exp1, exp2])
 
     exp1 = normalizeLatex(exp1)
@@ -25,7 +26,7 @@ function latexEqual(exp1, exp2, vars = []) {
     }
   const varObject = {};
   if (vars.length > 0) {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < iter; i++) {
       for (let j = 0; j < vars.length; j++) {
         varObject[vars[j]] = getRandomNum();
       }
